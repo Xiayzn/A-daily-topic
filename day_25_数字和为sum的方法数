@@ -25,3 +25,73 @@
 输出
 4
 */
+
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<stdio.h>
+#include<memory.h>
+using namespace std;
+#define MAX 1005
+
+int main()
+{
+    int n,m;
+    int arr[MAX];
+    cin>>n>>m;
+    for(int i = 1; i <= n; i++) cin>>arr[i];
+    long long dp[MAX][MAX];
+    memset(dp,0,sizeof(dp));
+
+    dp[0][0] = 1;
+    for(int i = 1; i <= n; i++)
+    {
+        dp[i][0] = 1;
+        for(int j = 0; j <= m; j++)
+        {
+            if(j < arr[i])
+            {
+                dp[i][j] = dp[i-1][j];
+            }
+            else
+            {
+                dp[i][j] = dp[i-1][j] + dp[i-1][j-arr[i]];
+            }
+        }
+    }
+    cout<<dp[n][m]<<endl;
+
+    return 0;
+}
+
+//优化方案
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include<stdio.h>
+#include<memory.h>
+using namespace std;
+#define MAX 1005
+
+int main()
+{
+    int n,m;
+    int arr[MAX];
+    cin>>n>>m;
+    for(int i = 1; i <= n; i++) cin>>arr[i];
+    long long dp[MAX];
+    memset(dp,0,sizeof(dp));
+
+    dp[0] = 1;
+    for(int i = 1; i <= n; i++)
+    {
+        for(int j = m; j >=  arr[i]; j--)
+        {
+           dp[j] = dp[j] + dp[j-arr[i]];
+        }
+    }
+
+    cout<<dp[m]<<endl;
+
+    return 0;
+}
