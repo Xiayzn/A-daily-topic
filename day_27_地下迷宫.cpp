@@ -146,6 +146,14 @@ int main()
 
 
 //方法二
+//思路：
+//题目有两个点需要注意： 
+//小青蛙向不同方向走所消耗体力不同（向上3，向下0，向左或向右1）
+//判断是否能逃离迷宫，并且要求输出消耗体力最少的路径
+//这里我使用广搜的思想来实现
+//为了能在遍历过程中监测体力消耗情况和记录路径，我维护了两个队列： 
+//一个队列用于记录路径，便于最后输出最佳路径
+//另一个队列用于记录需要访问的点，并记录了到达该点后剩余的体力值以及是从该点的哪个方向来到该点的（防止回溯导致内存溢出）
 #include<iostream>
 #include<queue>
 #include<vector>
@@ -249,4 +257,101 @@ int main()
         }
     }
     return 0;
+}
+
+//方法三
+//思路：递归+回溯。从起始位置开始，向上下左右四个方向分别前进一步，然后加上前进所要消耗的体力值，若某个位置为0，
+//或下一个位置越界，或该位置已访问过，则跳出递归。
+//若到达出口位置，比较体力消耗值是否大于青蛙总共拥有的体力值，且同时小于目前最小的体力消耗值；若是，则更新最小体力消耗值和路径。
+#include<iostream>
+#include<vector>
+using namespace std;
+int n, m, p, step = 999999;
+vector<int> res;
+int a[10][10];
+bool visit[10][10];
+ 
+void escape(vector<int>&tmp, int sum, int i, int j) {
+	  if ( i==0 && j == m-1) {
+		  if (sum <= p && sum <step ){
+			  step = sum;
+			  res = tmp;
+		  }
+		  return ;
+	  }
+	  
+	  if ( i-1>=0 && a[i-1][j] == 1 && visit[i-1][j]==0) {
+		  sum += 3;
+		  tmp.push_back(i-1);
+		  tmp.push_back(j);
+		  visit[i-1][j] = 1;
+		  escape(tmp, sum, i-1, j);
+		  sum -= 3;
+		  tmp.pop_back(); tmp.pop_back();
+		  visit[i-1][j] = 0;
+	  }
+	  
+	  if ( i+1 <n && a[i+1][j] == 1 && visit[i+1][j]==0) {
+		  tmp.push_back(i+1);
+		  tmp.push_back(j);
+		  visit[i+1][j] = 1;
+		  escape(tmp, sum, i+1, j);
+		  tmp.pop_back(); tmp.pop_back();
+		  visit[i+1][j] = 0;
+	  }
+	  
+	  if ( j-1>=0 && a[i][j-1]==1 && visit[i][j-1]==0) {
+		  sum += 1;
+		  tmp.push_back(i);
+		  tmp.push_back(j-1);
+		  visit[i][j-1] = 1;
+		  escape( tmp, sum, i, j-1);
+		  sum -= 1;
+		  tmp.pop_back(); tmp.pop_back();
+		  visit[i][j-1] = 0;
+	  }
+	  
+	  if ( j+1<m && a[i][j+1]==1 && visit[i][j+1]==0) {
+		  sum += 1;
+		  tmp.push_back(i);
+		  tmp.push_back(j+1);
+		  visit[i][j+1] = 1;
+		  escape(tmp, sum, i, j+1);
+		  sum -= 1;
+		  tmp.pop_back(); tmp.pop_back();
+		  visit[i][j+1] = 0;
+	  }
+	  
+	}
+ 
+int main() {
+     
+     cin>>n>>m>>p;
+    
+          for(int i=0; i<n; i++)
+          	for(int j=0; j<m; j++)
+          		cin>>a[i][j];
+ 
+          vector<int> tmp;
+          int sum = 0;
+          
+          tmp.push_back(0);tmp.push_back(0);
+    		visit[0][0] = 1;
+          
+          escape(tmp, sum, 0, 0);
+          
+          if (step == 999999)
+          	cout<<"Can not escape!";
+          else {
+              int size = res.size();
+              
+              for (int i=0; i<size-2; i+=2) {
+                  cout<<"["<<res[i]<<","<<res[i+1]<<"]"<<",";
+              }
+              cout<<"["<<res[size-2]<<","<<res[size-1]<<"]";
+          }
+          
+          return 0;
+         
+          
 }
