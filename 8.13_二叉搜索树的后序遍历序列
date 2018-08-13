@@ -10,6 +10,7 @@
 用递归和非递归都可以
 */
 
+/*递归*/
 class Solution {
 public:
     bool VerifySquenceOfBST(vector<int> sequence) {
@@ -24,5 +25,23 @@ public:
         for (; mid < r - 1 && sequence[mid] < sequence[r - 1]; ++mid);
         for (last = mid; last < r - 1 && sequence[last] > sequence[r - 1]; ++last);
         return last == r - 1 && SquenceOfBST(sequence, l, mid) && SquenceOfBST(sequence, mid, r - 1);
+    }
+};
+
+
+/*非递归*/
+class Solution {
+public:
+    bool VerifySquenceOfBST(vector<int> sequence) {
+        if (sequence.size() == 0)
+            return false;
+        int last = sequence.size() - 1;
+        for (int i = 0; last != 0; last--, i = 0) {
+            for (; sequence[i] < sequence[last]; ++i);
+            for (; sequence[i] > sequence[last]; ++i);
+            if (i != last)
+                return false;
+        }
+        return true;
     }
 };
