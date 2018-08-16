@@ -6,6 +6,26 @@
 */
 
 /*
+基本思路：
+判断一颗二叉树是不是对称的，等价于判断其左右子树是不是镜像对称的
+判断镜对称像即判断对称的位置上的元素是不是相等
+两个节点A和B对称等价于: 
+这两个节点上存储的值相等
+节点A的左子树节点和节点B的右子树上的节点是对称的
+节点A的右子树节点和节点A的左子树上的节点是对称的
+*/
+
+/*
+struct TreeNode {
+    int val;
+    struct TreeNode *left;
+    struct TreeNode *right;
+    TreeNode(int x) :
+            val(x), left(NULL), right(NULL) {
+    }
+};
+*/
+/*
 struct TreeNode {
     int val;
     struct TreeNode *left;
@@ -17,9 +37,24 @@ struct TreeNode {
 */
 class Solution {
 public:
+    bool isTreeSymmertic(TreeNode *pHead1,TreeNode *pHead2){
+        if(pHead1==NULL && pHead2==NULL)
+            return true;
+        if(pHead1==NULL)
+            return false;
+        if(pHead2==NULL)
+            return false;
+
+        return (pHead1->val==pHead2->val) && isTreeSymmertic(pHead1->left,pHead2->right) && isTreeSymmertic(pHead1->right,pHead2->left);
+    }
     bool isSymmetrical(TreeNode* pRoot)
     {
-    
+        if(pRoot==NULL)
+            return true;
+        bool res=isTreeSymmertic(pRoot->left,pRoot->right);
+        return res;
     }
 
 };
+
+
