@@ -1,3 +1,31 @@
+/*
+题目描述
+
+Given a binary tree, return the postorder traversal of its nodes’ values. 
+For example: 
+Given binary tree{1,#,2,3}, 
+1 
+\ 
+2 
+/ 
+3
+return[3,2,1]. 
+Note: Recursive solution is trivial, could you do it iteratively?：
+*/
+
+/*
+题意
+通过题目所给的树，求出其后根遍历，并将结点的val值压入vector中，建议用通过非递归方式实现
+
+解题思路
+通过栈去模拟递归，首先要明确后根遍历，必须先遍历完左子树与右子树之后，才访问根节点。当前遍历的节点分有子树和没子树两种，没子树自然直接可以加入vector中，而有的呢，有一种处理方法，将后根遍历的前一个节点保存起来，若此节点不是当前遍历节点的左右子树，证明当前节点左右子树还没被访问到。 
+为此我们可以分3种情况 
+1.栈顶的节点没有左右子树，证明此节点可以直接访问，就让此节点出栈，并将其的val值放入vector容器中，并将其值设为前驱节点的值 
+2.栈顶节点有左右子树，判断当前前驱节点是否为栈顶节点左右子树，是的话便可以出栈，并将其的val值放入vector容器中，并将其值设为前驱节点的值 
+3.栈顶的节点有左右子树，且不满足上述2条件，我们依次将右子树，左子树压入栈中（这样便可以保证，在遍历到根节点时，总能先访问到左子树，右子树）
+*/
+
+
 /**
  * Definition for binary tree
  * struct TreeNode {
@@ -10,6 +38,29 @@
 class Solution {
 public:
     vector<int> postorderTraversal(TreeNode *root) {
-        
+        vector<int> v;
+        if(root==NULL)
+            return v;
+        stack<TreeNode *> sta;
+        TreeNode *pre =NULL; //前驱遍历顶点
+        sta.push(root);
+        while(!sta.empty())
+        {
+            TreeNode *tmp = sta.top();
+            if((tmp->left==NULL&&tmp->right==NULL)||(pre!=NULL&&(tmp->left==pre||tmp->right==pre)))
+            {
+                v.push_back(tmp->val);
+                sta.pop();
+                pre = tmp;
+            }
+            else
+            {
+                if(tmp->right!=NULL)
+                    sta.push(tmp->right);
+                if(tmp->left!=NULL)
+                    sta.push(tmp->left);    
+            }
+        }
+        return v;
     }
 };
