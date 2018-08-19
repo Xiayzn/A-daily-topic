@@ -1,0 +1,54 @@
+/*
+[LeetCode] Binary Tree Maximum Path Sum 求二叉树的最大路径和
+ 
+
+Given a binary tree, find the maximum path sum.
+
+The path may start and end at any node in the tree.
+
+For example:
+Given the below binary tree,
+
+       1
+      / \
+     2   3
+ 
+
+Return 6.
+
+*/
+
+/*
+思路：
+关键在于递归函数的返回值，应该返回该节点的任意子节点到该节点父节点之间路径的最大值，
+即root->l返回的值应该为root->l的任意子节点到root能得到的最大值-root->val。
+同时在遍历时时刻检查sum与max的大小并更新max的值。
+*/
+
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int maxPathSum(TreeNode *root) {
+        max_path = INT_MIN;
+        dfs(root);
+        return max_path;
+        
+    }
+    int dfs(TreeNode *root){
+        if(NULL == root)
+            return 0;
+        int left = max(0, dfs(root->left));
+        int right = max(0, dfs(root->right));
+        max_path = max(max_path, left + right + root->val);
+        return (max(left, right) + root->val);
+    }
+    int max_path;
+};
