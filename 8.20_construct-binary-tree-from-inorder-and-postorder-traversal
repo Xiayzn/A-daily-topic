@@ -1,0 +1,87 @@
+/*
+[LeetCode] Construct Binary Tree from Inorder and Postorder Traversal 由中序和后序遍历建立二叉树
+ 
+
+Given inorder and postorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+
+*/
+
+/*
+
+由后序遍历的定义，我们知道最后一个值必定是二叉树的根节点root。
+由而中序遍历的定义，我们又可以发现根节点是左右子树的分界点。
+结合两者，就可以想到使用分治、递归的方法，
+由后序遍历来确定每一个根节点，然后在中序遍历中找到该节点的下标i，
+那么[start, i-1]就是该i节点的左子树，[i+1, end]就是该i节点的右子树，直到叶子节点的出现。 
+如第一趟遍历： 
+【6，4，7，2，5】，1，【8，3，9】 
+root节点： 1 
+左子树：【6，4，7，2，5】 
+右子树：【8，3，9】 
+再对左右子树执行相同方法即可。
+
+*/
+
+//方法1：
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if (inorder.empty() || postorder.empty())
+            return NULL;
+        int root_index = postorder.size()-1;
+        return createBST(inorder,postorder,0,root_index,root_index);
+    }
+    TreeNode* createBST(vector<int>& inorder, vector<int>& postorder, int start, int end, int& index) {
+        int v = postorder[index];
+        int i = start;
+        for (i; i <= end; i++){
+            if (inorder[i] == v)
+                break;
+        }
+        TreeNode* root = new TreeNode(v);
+        if (end >= i+1)
+            root->right = createBST(inorder,postorder,i+1,end,--index);
+        if (i-1 >= start)
+            root->left = createBST(inorder,postorder,start,i-1,--index);
+        return root;
+    }
+};
+
+
+//方法二：
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode *buildTree(vector<int> &inorder, vector<int> &postorder) {
+        return buildTree(inorder,postorder,0,inorder.size(),0,postorder.size());
+    }
+    
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder,int il,int ir,int postl,int postr) {
+        if(il==ir) return NULL;
+        TreeNode* root=new TreeNode(postorder[postr-1]);
+        int k=find(inorder.begin()+il,inorder.begin()+ir,postorder[postr-1])-inorder.begin();
+        root->left=buildTree(inorder,postorder,il,k,postl,k-il+postl);
+        root->right=buildTree(inorder,postorder,k+1,ir,k-il+postl,postr-1);
+        return root;
+    }
+};
