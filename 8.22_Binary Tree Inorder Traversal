@@ -1,0 +1,92 @@
+/*
+[LeetCode] Binary Tree Inorder Traversal 二叉树的中序遍历
+ 
+
+Given a binary tree, return the inorder traversal of its nodes' values.
+
+For example:
+Given binary tree {1,#,2,3},
+
+   1
+    \
+     2
+    /
+   3
+ 
+
+return [1,3,2].
+
+Note: Recursive solution is trivial, could you do it iteratively?
+
+confused what "{1,#,2,3}" means? > read more on how binary tree is serialized on OJ.
+
+
+思路：
+二叉树的中序遍历顺序为左-根-右，可以有递归和非递归来解，其中非递归解法又分为两种，
+一种是使用栈来接，另一种不需要使用栈。
+我们先来看递归方法，十分直接，对左子结点调用递归函数，根节点访问值，右子节点再调用递归函数
+
+*/
+
+
+//递归代码
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode *root) {
+        vector<int> res;
+        inorder(root, res);
+        return res;
+    }
+    void inorder(TreeNode *root, vector<int> &res) {
+        if (!root) return;
+        if (root->left) inorder(root->left, res);
+        res.push_back(root->val);
+        if (root->right) inorder(root->right, res);
+    }
+};
+
+
+/*
+非递归使用栈的解法，也是符合本题要求使用的解法之一，
+需要用栈来做，思路是从根节点开始，先将根节点压入栈，然后再将其所有左子结点压入栈，
+然后取出栈顶节点，保存节点值，再将当前指针移到其右子节点上，若存在右子节点，
+则在下次循环时又可将其所有左子结点压入栈中。这样就保证了访问顺序为左-根-右
+*/
+//非递归代码
+/**
+ * Definition for binary tree
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode *root) {
+        vector<int> res;
+        stack<TreeNode*> s;
+        TreeNode *p = root;
+        while (p || !s.empty()) {
+            while (p) {
+                s.push(p);
+                p = p->left;
+            }
+            p = s.top();
+            s.pop();
+            res.push_back(p->val);
+            p = p->right;
+        }
+        return res;
+    }
+};
